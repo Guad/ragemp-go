@@ -1,5 +1,5 @@
 #pragma once
-#include "golang_defines.h"
+#include "golang_defines.hpp"
 
 #define GO_API __stdcall
 

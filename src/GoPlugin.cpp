@@ -1,59 +1,63 @@
-#include "GoPlugin.h"
-
 #include <iostream>
+#include <filesystem> 
 
-GoPlugin::GoPlugin(LPCWSTR path)
+#include "GoPlugin.hpp"
+
+namespace fs = std::experimental::filesystem;
+
+std::string last(std::string const& str, std::string const& delimiter) { return str.substr(str.find_last_of(delimiter) + delimiter.size()); }
+
+GoPlugin::GoPlugin()
 {
-	wcscpy_s(this->_path, MAX_PATH, path);
-}
+	// Iterate all DLLs
+	std::cout << "Initializing RageGo.." << std::endl;
 
-GoPlugin::~GoPlugin()
-{
-	
-}
+	char buffer[MAX_PATH];
+	GetModuleFileNameA(NULL, buffer, MAX_PATH);
+	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+	std::string path = std::string(buffer).substr(0, pos);
+	path.append("\\gopackages\\");
 
-int GoPlugin::TryInitialize(rage::IMultiplayer *mp)
-{
-	_dllHandle = LoadLibrary(this->_path);
-
-	if (_dllHandle != NULL)
+	for (const auto & p : fs::directory_iterator("gopackages"))
 	{
-		InitializeGoPlugin init = (InitializeGoPlugin) GetProcAddress(_dllHandle, "InitializeGoPlugin");
+		const auto path_str = p.path().string();
+		const auto filename = last(path_str, "\\");
+		if (filename.find(".dll") == std::string::npos) continue;
 
-		if (init != NULL)
-		{			
-			int result = (int) init();
+		std::cout << "Loading '" << filename << "'.." << std::endl;
 
-			if (!result) {
-				HookEvents(mp);
-			}
-
-			return result;
-		}
-		else
-		{
-			return 2;
-		}
-	}
-	else
-	{
-		return 1;
+		if (!InitPackage(path_str)) std::cout << "Error, unable to initialize '" << filename << "'!" << std::endl;
+		std::cout << std::endl;
 	}
 }
 
-void GoPlugin::HookEvents(rage::IMultiplayer * mp)
+bool GoPlugin::InitPackage(const std::string& path)
 {
-	std::cout << "Hooking up events." << std::endl;
-	FARPROC proc;
-	if ((proc = GetProcAddress(_dllHandle, "TickEvent")))
+	WIN32_FIND_DATA data;
+
+	std::wstring wstring_path = std::wstring(path.begin(), path.end());
+	const LPCWSTR lpcwstr_path = wstring_path.c_str();
+
+	HINSTANCE dll_handle = LoadLibrary(lpcwstr_path);
+
+	if (dll_handle != nullptr)
 	{
-		this->_tickHandler = (TickEvent)proc;
-		std::cout << "Found tickevent" << std::endl;
-
-		mp->AddEventHandler(this);
-
-		rage::IWorld &w = mp->GetWorld();
-		rage::IWorld *ptrW = &w;
+		InitializeGoPlugin init = GetProcAddress(dll_handle, "main");
+		if (init == nullptr) std::cout << "Error, missing 'main' entry point function!" << std::endl;
+		init();
 	}
-	
+	return true;
 }
+
+void GoPlugin::Terminate()
+{
+	// FreeLibrary
+}
+
+void GoPlugin::SetMultiplayer(rage::IMultiplayer *mp)
+{
+	this->m_mp = mp;
+	mp->AddEventHandler(dynamic_cast<rage::IEventHandler*>(&RAGEMP::EventHandler::GetInstance()));
+}
+
+// todo: event invocation

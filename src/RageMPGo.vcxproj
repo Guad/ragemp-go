@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;RAGEMPGO_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,17 +148,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="GoPlugin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="golang_api.h" />
-    <ClInclude Include="golang_defines.h" />
-    <ClInclude Include="GoPlugin.h" />
-    <ClInclude Include="sdk\Entities.hpp" />
-    <ClInclude Include="sdk\Entity.hpp" />
-    <ClInclude Include="sdk\Pools.hpp" />
-    <ClInclude Include="sdk\rage.hpp" />
+    <ClInclude Include="golang_api.hpp" />
+    <ClInclude Include="golang_defines.hpp" />
+    <ClInclude Include="GoPlugin.hpp" />
+    <ClInclude Include="main.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
