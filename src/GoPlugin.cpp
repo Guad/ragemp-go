@@ -41,19 +41,12 @@ int GoPlugin::TryInitialize(rage::IMultiplayer *mp)
 	}
 }
 
-void GoPlugin::HookEvents(rage::IMultiplayer * mp)
+void GoPlugin::HookEvents(rage::IMultiplayer *mp)
 {
-	std::cout << "Hooking up events." << std::endl;
-	FARPROC proc;
+	FARPROC proc;	
 	if ((proc = GetProcAddress(_dllHandle, "TickEvent")))
 	{
 		this->_tickHandler = (TickEvent)proc;
-		std::cout << "Found tickevent" << std::endl;
-
-		mp->AddEventHandler(this);
-
-		rage::IWorld &w = mp->GetWorld();
-		rage::IWorld *ptrW = &w;
 	}
 	
 }
