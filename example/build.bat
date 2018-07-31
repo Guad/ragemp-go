@@ -1,0 +1,1 @@
+go build -o sampleGoPlugin.dll -buildmode=c-shared test.go
