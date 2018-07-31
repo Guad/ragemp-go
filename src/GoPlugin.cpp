@@ -26,24 +26,20 @@ GoPlugin::GoPlugin()
 
 		std::cout << "Loading '" << filename << "'.." << std::endl;
 
-		if (!InitPackage(path_str)) std::cout << "Error, unable to initialize '" << filename << "'!" << std::endl;
-		std::cout << std::endl;
+		if (!InitPackage(path_str)) std::cout << "Error, unable to initialize '" << filename << "' package!" << std::endl << std::endl;
 	}
 }
 
 bool GoPlugin::InitPackage(const std::string& path)
 {
-	WIN32_FIND_DATA data;
-
 	std::wstring wstring_path = std::wstring(path.begin(), path.end());
 	const LPCWSTR lpcwstr_path = wstring_path.c_str();
 
 	HINSTANCE dll_handle = LoadLibrary(lpcwstr_path);
-
 	if (dll_handle != nullptr)
 	{
 		InitializeGoPlugin init = GetProcAddress(dll_handle, "main");
-		if (init == nullptr) std::cout << "Error, missing 'main' entry point function!" << std::endl;
+		if (init == nullptr) return false;
 		init();
 	}
 	return true;
