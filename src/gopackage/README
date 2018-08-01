@@ -1,0 +1,12 @@
+# RageMP Go package
+
+## Installing
+
+Put this into your %GOPATH%/src, somewhere like %GOPATH%/src/rage and then run `go install`
+You can import it in your go script with `import "rage"` if you put it in the rage folder.
+
+## Building your scripts
+
+To build your go script, simply execute `go build -o myAwesomePlugin.dll -buildmode=c-shared mygamemode.go` and copy the resulting dll to server-files/gopackages.
+
+You need MinGW installed for it to work.

@@ -1,15 +1,37 @@
 package main
 
-import "C"
+import (
+	"C"
+	"swig/rage"
 
-import "fmt"
-import "time"
+	"fmt"
+	"time"
+	"unsafe"
+)
 
 var lastPrinted int64
 
 //export InitializeGoPlugin
-func InitializeGoPlugin() int {
+func InitializeGoPlugin(mp unsafe.Pointer) int {
 	fmt.Println("Hello world from Go!")
+
+	fmt.Printf("Pointer: %v\n", mp)
+
+	//recast := (*rage.IMultiplayer)(mp)
+
+	safemp := rage.IMultiplayerFromPointer(uintptr(mp))
+	world := safemp.GetWorld()
+
+	trafficLights := world.GetTrafficLightsState()
+
+	fmt.Println("Traffic lights: ", trafficLights)
+
+	world.SetTrafficLightsState(2)
+
+	trafficLights = world.GetTrafficLightsState()
+
+	fmt.Println("Traffic lights 2: ", trafficLights)
+
 	return 0
 }
 
@@ -22,5 +44,4 @@ func TickEvent() {
 	}
 }
 
-func main() {
-}
+func main() {}

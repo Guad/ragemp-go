@@ -11,6 +11,7 @@ class GoPlugin
 		static GoPlugin& GetInstance() { static GoPlugin instance; return instance; }
 		rage::IMultiplayer *GetMultiplayer() { return m_mp; }
 
+		void Initialize();
 		bool InitPackage(const std::string& path);
 		void Terminate();
 		void SetMultiplayer(rage::IMultiplayer *mp);

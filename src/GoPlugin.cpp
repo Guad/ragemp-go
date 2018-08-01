@@ -9,6 +9,11 @@ std::string last(std::string const& str, std::string const& delimiter) { return 
 
 GoPlugin::GoPlugin()
 {
+	
+}
+
+void GoPlugin::Initialize()
+{
 	// Iterate all DLLs
 	std::cout << "Initializing RageGo.." << std::endl;
 
@@ -38,9 +43,9 @@ bool GoPlugin::InitPackage(const std::string& path)
 	HINSTANCE dll_handle = LoadLibrary(lpcwstr_path);
 	if (dll_handle != nullptr)
 	{
-		InitializeGoPlugin init = GetProcAddress(dll_handle, "main");
+		InitializeGoPlugin init = (InitializeGoPlugin) GetProcAddress(dll_handle, "InitializeGoPlugin");
 		if (init == nullptr) return false;
-		init();
+		init(GetMultiplayer());
 	}
 	return true;
 }
